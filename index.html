@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="darkreader-lock">
+    <title>A2Z DSA Course Roadmap</title>
+    <style>
+        :root {
+            --primary-color: #404269;
+            --primary-hover-color: #53557E;
+            --success-color: #1a8f47;
+            --success-hover-color: #25a95a;
+            --medium-gray: #282828;
+            --white-color: #353535;
+            --border-color: #b0b0b0;
+            --text-color: #ffffff;
+            --dark-gray: #e0e4e8;
+            --light-gray: #303030;
+            --link-color: #8ea1e9;
+            --warning-color: #f5a623;
+            --danger-color: #e52d27;
+            --completed-bg-color: rgba(26, 143, 71, 0.1);
+            --completed-text-color: #63e6be;
+            --progress-bar-bg: var(--success-color);
+        }
+
+        html { font-size: 16px; }
+
+        @media (max-width: 768px) { html { font-size: 14px; } }
+
+        @media (max-width: 480px) {
+            html { font-size: 12px; }
+            h1 { font-size: 2rem; }
+            .collapsible { font-size: 1.3rem; }
+            .sub-collapsible { font-size: 1.1rem; }
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            background-color: var(--medium-gray);
+            color: var(--text-color);
+            margin: 0;
+            padding: 1rem;
+        }
+
+        /* ── Sync status banner — lives in static HTML, always findable ── */
+        #sync-status {
+            text-align: center;
+            font-size: 0.82rem;
+            padding: 0.35rem 0.8rem;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            display: none;
+        }
+        #sync-status.info    { display: block; background: #1a3a5c; color: #aad4f5; }
+        #sync-status.success { display: block; background: #1a3a1a; color: #63e6be; }
+        #sync-status.error   { display: block; background: #4a1a1a; color: #f5a6a6; }
+        #sync-status.warning { display: block; background: #3a2a00; color: #f5d06e; }
+
+        .container {
+            max-width: 1200px;
+            margin: 1rem auto;
+            background-color: var(--white-color);
+            padding: 1rem 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+            border: 1px solid var(--border-color);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 2.25rem;
+            color: var(--text-color);
+            border-bottom: 3px solid var(--border-color);
+            padding-bottom: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .roadmap-header {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .roadmap-header h1 { margin-bottom: 0; }
+
+        .toggle-all-btn {
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background: var(--light-gray);
+            color: var(--text-color);
+            padding: 0.45rem 0.9rem;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        .toggle-all-btn:hover { background: #3a3a3a; }
+
+        @media (max-width: 768px) {
+            .toggle-all-btn {
+                position: static;
+                transform: none;
+                display: block;
+                margin: 0.75rem auto 0;
+            }
+        }
+
+        .collapsible, .sub-collapsible {
+            color: #fff;
+            cursor: pointer;
+            padding: 0.85rem 1.25rem;
+            width: 100%;
+            border: none;
+            text-align: left;
+            outline: none;
+            margin-top: 0.75rem;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background-color 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+            background-color: var(--primary-color);
+        }
+
+        .collapsible::before, .sub-collapsible::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            height: 100%;
+            width: var(--progress-width, 0%);
+            background-color: var(--progress-bar-bg);
+            transition: width 0.4s ease-out, background-color 0.4s ease;
+            z-index: 1;
+        }
+
+        .collapsible { font-size: 1.5rem; }
+        .sub-collapsible { font-size: 1.2rem; }
+
+        .collapsible:hover, .collapsible.active,
+        .sub-collapsible:hover, .sub-collapsible.active {
+            background-color: var(--primary-hover-color);
+        }
+
+        .collapsible.completed, .sub-collapsible.completed { background-color: var(--success-color); }
+        .collapsible.completed:hover, .collapsible.completed.active,
+        .sub-collapsible.completed:hover, .sub-collapsible.completed.active {
+            background-color: var(--success-hover-color);
+        }
+
+        .collapsible-title { flex-grow: 1; }
+
+        .progress-counter {
+            font-size: 0.7em;
+            font-weight: 500;
+            background-color: rgba(0,0,0,0.25);
+            padding: 0.2rem 0.6rem;
+            border-radius: 1rem;
+            margin-left: 1rem;
+            white-space: nowrap;
+        }
+
+        .collapsible-title, .progress-counter,
+        .collapsible::after, .sub-collapsible::after {
+            position: relative;
+            z-index: 2;
+        }
+
+        .collapsible::after, .sub-collapsible::after {
+            content: '+';
+            font-size: 1.5em;
+            font-weight: bold;
+            transition: transform 0.3s ease;
+            margin-left: 1rem;
+        }
+
+        .collapsible.active::after, .sub-collapsible.active::after { transform: rotate(45deg); }
+
+        .content, .sub-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-in-out;
+            background-color: transparent;
+        }
+
+        .content {
+            border-radius: 0 0 8px 8px;
+            border-top: none;
+            padding: 0 0.5rem;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0.75rem;
+            border: 1px solid var(--border-color);
+            table-layout: fixed;
+            min-width: 800px;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 0.4rem 0.3rem;
+            text-align: center;
+            vertical-align: middle;
+            word-wrap: break-word;
+        }
+
+        .topic-cell {
+            text-align: left;
+            font-weight: 500;
+            width: 35%;
+        }
+
+        thead th:not(.topic-cell):not(.notes-header) { width: 7%; }
+        th.notes-header { width: 10%; }
+
+        .topic-title {
+            font-size: 0.95rem;
+            padding: 0.5rem;
+        }
+
+        thead th {
+            background-color: var(--light-gray);
+            color: var(--dark-gray);
+            font-weight: 600;
+        }
+
+        tr { color: var(--dark-gray); }
+
+        tr.completed {
+            background-color: var(--completed-bg-color) !important;
+            color: var(--completed-text-color) !important;
+        }
+
+        tr.completed a {
+            color: var(--completed-text-color) !important;
+            font-weight: 500;
+        }
+
+        .difficulty-easy td:first-child   { box-shadow: inset 5px 0 0 0 var(--success-color); }
+        .difficulty-medium td:first-child { box-shadow: inset 5px 0 0 0 var(--warning-color); }
+        .difficulty-hard td:first-child   { box-shadow: inset 5px 0 0 0 var(--danger-color); }
+
+        .link-cell { cursor: pointer; transition: background-color 0.2s ease; }
+        .link-cell:hover { background-color: var(--light-gray); }
+
+        .link-cell a {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: -0.5rem -0.4rem;
+            padding: 0.5rem 0.4rem;
+            color: var(--link-color);
+            text-decoration: none;
+            height: 100%;
+        }
+
+        .link-cell svg { width: 24px; height: 24px; fill: currentColor; }
+        .na-cell { color: #bdc3c7; font-size: 1.2rem; font-weight: 600; }
+
+        .status-cell { cursor: pointer; }
+
+        .status-checkbox {
+            -webkit-appearance: none;
+            appearance: none;
+            background-color: transparent;
+            margin: auto;
+            font: inherit;
+            color: var(--dark-gray);
+            width: 1.15em;
+            height: 1.15em;
+            border: 0.15em solid currentColor;
+            border-radius: 0.15em;
+            display: grid;
+            place-content: center;
+            pointer-events: none;
+        }
+
+        .status-checkbox::before {
+            content: "";
+            width: 0.65em;
+            height: 0.65em;
+            clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+            transform: scale(0);
+            transform-origin: bottom left;
+            transition: 120ms transform ease-in-out;
+            box-shadow: inset 1em 1em var(--success-color);
+        }
+
+        .status-checkbox:checked { border-color: var(--success-color); }
+        .status-checkbox:checked::before { transform: scale(1); }
+
+        /* ── Notes button in table ── */
+        .notes-cell { text-align: center; padding: 0.3rem; }
+
+        .notes-btn {
+            background: var(--light-gray);
+            color: var(--link-color);
+            border: 1px solid #555;
+            border-radius: 6px;
+            padding: 0.25rem 0.5rem;
+            font-size: 0.78rem;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: background 0.2s, border-color 0.2s;
+            max-width: 100%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .notes-btn:hover { background: #3a3a3a; border-color: var(--link-color); }
+        .notes-btn.has-notes { color: var(--warning-color); border-color: var(--warning-color); }
+        tr.completed .notes-btn { color: var(--completed-text-color); border-color: rgba(99,230,190,0.5); }
+
+        /* ── Notes modal overlay ── */
+        #notes-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        #notes-modal-overlay.open { display: flex; }
+
+        #notes-modal {
+            background: #2a2a2a;
+            border: 1px solid #555;
+            border-radius: 12px;
+            width: min(620px, 94vw);
+            max-height: 85vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        #notes-modal-header {
+            background: var(--primary-color);
+            padding: 0.9rem 1.2rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            border-radius: 12px 12px 0 0;
+        }
+
+        #notes-modal-title {
+            flex: 1;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #fff;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #notes-modal-close {
+            background: none;
+            border: none;
+            color: #ccc;
+            font-size: 1.4rem;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0 0.2rem;
+            border-radius: 4px;
+        }
+        #notes-modal-close:hover { color: #fff; background: rgba(255,255,255,0.1); }
+
+        #notes-modal-body {
+            padding: 1rem 1.2rem;
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        #notes-modal-textarea {
+            width: 100%;
+            box-sizing: border-box;
+            background: #1e1e1e;
+            color: #e0e4e8;
+            border: 1px solid #555;
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 0.92rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 220px;
+            line-height: 1.6;
+            transition: border-color 0.2s;
+        }
+        #notes-modal-textarea:focus {
+            outline: none;
+            border-color: var(--link-color);
+            box-shadow: 0 0 0 3px rgba(142,161,233,0.15);
+        }
+
+        #notes-char-count {
+            font-size: 0.75rem;
+            color: #888;
+            text-align: right;
+            margin-top: 0.35rem;
+        }
+        #notes-char-count.near-limit { color: var(--warning-color); }
+
+        #notes-modal-footer {
+            padding: 0.75rem 1.2rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.75rem;
+            border-top: 1px solid #444;
+            background: #252525;
+        }
+
+        #notes-save-status {
+            font-size: 0.8rem;
+            flex: 1;
+            color: #888;
+        }
+        #notes-save-status.saving { color: var(--warning-color); }
+        #notes-save-status.saved  { color: var(--success-color); }
+        #notes-save-status.error  { color: var(--danger-color); }
+
+        .modal-btn {
+            padding: 0.5rem 1.1rem;
+            border-radius: 8px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: opacity 0.2s, background 0.2s;
+        }
+        .modal-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        #notes-cancel-btn {
+            background: #3a3a3a;
+            color: #ccc;
+            border: 1px solid #555;
+        }
+        #notes-cancel-btn:hover:not(:disabled) { background: #444; }
+
+        #notes-save-btn {
+            background: var(--success-color);
+            color: #fff;
+        }
+        #notes-save-btn:hover:not(:disabled) { background: var(--success-hover-color); }
+    </style>
+</head>
+
+<body>
+    <!-- Sync status banner: in static HTML so showStatus() always finds it -->
+    <div id="sync-status"></div>
+
+    <div id="roadmap-container" class="container">
+        <h1>Loading Roadmap…</h1>
+    </div>
+
+    <!-- Notes modal: one shared modal for all 455 questions -->
+    <div id="notes-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="notes-modal-title">
+        <div id="notes-modal">
+            <div id="notes-modal-header">
+                <span id="notes-modal-title">Notes</span>
+                <button id="notes-modal-close" title="Close" aria-label="Close">✕</button>
+            </div>
+            <div id="notes-modal-body">
+                <textarea id="notes-modal-textarea" placeholder="Write your notes here…&#10;&#10;You can include:&#10;• Approach / algorithm notes&#10;• Time &amp; space complexity&#10;• Links to similar problems&#10;• Any reminders for revision"></textarea>
+                <div id="notes-char-count">0 / 10,000</div>
+            </div>
+            <div id="notes-modal-footer">
+                <span id="notes-save-status"></span>
+                <button id="notes-cancel-btn" class="modal-btn">Cancel</button>
+                <button id="notes-save-btn"   class="modal-btn">Save to Sheet</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ═══════════════════════════════════════════════════════════════════
+    //  CONFIGURATION — paste your Apps Script Web App URL here
+    //  (from Deploy → Manage deployments in Apps Script)
+    // ═══════════════════════════════════════════════════════════════════
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycby5xFuLV7ZlFy08YUk5qI5iD8ekLnCUo8unqCl1lqseQlU0p1jf5vgFbLI0hISFL98hOw/exec";
+    // Example: "https://script.google.com/macros/s/AKfycb.../exec"
+    // ═══════════════════════════════════════════════════════════════════
+
+    const USE_SHEETS = APPS_SCRIPT_URL !== "https://script.google.com/macros/s/AKfycby5xFuLV7ZlFy08YUk5qI5iD8ekLnCUo8unqCl1lqseQlU0p1jf5vgFbLI0hISFL98hOw/exec";
+
+    // localStorage keys — used as offline fallback when Sheet is unreachable
+    const STORAGE_KEY       = 'dsaRoadmapProgress';
+    const NOTES_STORAGE_KEY = 'dsaRoadmapNotes';
+
+    // In-memory caches keyed by topic.id from a2z.json
+    let progressCache = {};   // { topicId: true/false }
+    let notesCache    = {};   // { topicId: "note text" }
+
+    // title → id lookup, built from a2z.json.
+    // Sheet rows are matched by question title (col C); this maps title → topic.id
+    let titleToId = {};
+
+    // Modal state
+    let modalTopicId    = null;
+    let modalTopicTitle = null;
+
+    const platformLogos = {
+        'BLOG': `<img src="./assets/logo/post.svg" alt="BLOG">`,
+        'YT':   `<img src="./assets/logo/yt.svg"   alt="YT">`,
+        'TUF':  `<img src="./assets/logo/tuf.svg"  alt="TUF">`,
+        'GFG':  `<img src="./assets/logo/gfg.svg"  alt="GFG">`,
+        'CN':   `<img src="./assets/logo/cn.svg"   alt="CN">`,
+        'LC':   `<img src="./assets/logo/lc.svg"   alt="LC">`
+    };
+
+    // ── Sync status banner ───────────────────────────────────────────
+    function showStatus(msg, type, autohideMs) {
+        if (autohideMs === undefined) autohideMs = 3000;
+        const el = document.getElementById('sync-status');
+        if (!el) return;
+        el.className = type;
+        el.textContent = msg;
+        clearTimeout(el._timer);
+        if (autohideMs > 0) {
+            el._timer = setTimeout(function () {
+                el.className = '';
+                el.textContent = '';
+                el.style.display = '';
+            }, autohideMs);
+        }
+    }
+
+    // ── localStorage helpers ─────────────────────────────────────────
+    function loadFromLocalStorage() {
+        try {
+            const p = localStorage.getItem(STORAGE_KEY);
+            const n = localStorage.getItem(NOTES_STORAGE_KEY);
+            progressCache = p ? JSON.parse(p) : {};
+            notesCache    = n ? JSON.parse(n) : {};
+        } catch (e) {
+            progressCache = {};
+            notesCache    = {};
+        }
+    }
+
+    function saveToLocalStorage() {
+        try {
+            localStorage.setItem(STORAGE_KEY,       JSON.stringify(progressCache));
+            localStorage.setItem(NOTES_STORAGE_KEY, JSON.stringify(notesCache));
+        } catch (e) { /* ignore */ }
+    }
+
+    // ── Google Sheet communication (GET only — avoids CORS preflight) ─
+    //
+    //  WHY GET ONLY:
+    //  Apps Script Web Apps deployed as "Anyone" do not respond to the
+    //  CORS OPTIONS preflight that browsers send before POST+JSON requests
+    //  from a cross-origin page (e.g. GitHub Pages → script.google.com).
+    //  The browser drops the POST before it ever reaches the script.
+    //  Using GET with URL-encoded params bypasses the preflight entirely.
+
+    async function loadFromSheet() {
+        const url = APPS_SCRIPT_URL + "?action=getAll";
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
+        // data = { "lowercased question title": { done: bool, notes: str } }
+        // Convert title keys to topic ids using the titleToId map
+        for (const titleKey in data) {
+            const id = titleToId[titleKey];
+            if (!id) continue;
+            progressCache[id] = data[titleKey].done  || false;
+            notesCache[id]    = data[titleKey].notes || "";
+        }
+    }
+
+    async function pushToSheet(topicTitle, done, notes) {
+        // All params go in the URL as GET query string — no POST body, no preflight
+        const params = new URLSearchParams({
+            action: "update",
+            title:  topicTitle,
+            done:   done ? "true" : "false",
+            notes:  notes || ""
+        });
+        const url = APPS_SCRIPT_URL + "?" + params.toString();
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+        return data;
+    }
+
+    // ── Bootstrap ────────────────────────────────────────────────────
+    document.addEventListener('DOMContentLoaded', function () {
+        fetch('a2z.json')
+            .then(function (response) {
+                if (!response.ok) throw new Error('Could not load a2z.json. Make sure it is in the same folder.');
+                return response.json();
+            })
+            .then(async function (roadmapData) {
+
+                // Build titleToId map from a2z.json
+                roadmapData.forEach(function (step) {
+                    if (!step.sub_steps) return;
+                    step.sub_steps.forEach(function (subStep) {
+                        subStep.topics.forEach(function (topic) {
+                            titleToId[topic.question_title.trim().toLowerCase()] = topic.id;
+                        });
+                    });
+                });
+
+                // Load progress data
+                if (USE_SHEETS) {
+                    showStatus('⏳ Syncing with Google Sheet…', 'info', 0);
+                    try {
+                        await loadFromSheet();
+                        showStatus('✅ Synced with Google Sheet', 'success', 3000);
+                    } catch (err) {
+                        console.error("Sheet load error:", err);
+                        showStatus('⚠️ Could not reach Google Sheet (' + err.message + '). Using local cache.', 'warning', 8000);
+                        loadFromLocalStorage();
+                    }
+                } else {
+                    showStatus('ℹ️ Running in local mode. Set APPS_SCRIPT_URL to sync with Google Sheet.', 'warning', 8000);
+                    loadFromLocalStorage();
+                }
+
+                generateRoadmap(roadmapData);
+                addEventListeners();
+                initNotesModal();
+            })
+            .catch(handleError);
+    });
+
+    // ── Roadmap rendering ────────────────────────────────────────────
+    function generateRoadmap(data) {
+        const container = document.getElementById('roadmap-container');
+        let htmlContent = `
+            <div class="roadmap-header">
+                <h1>A2Z DSA Course Roadmap</h1>
+                <button type="button" id="toggle-all" class="toggle-all-btn">Expand all</button>
+            </div>`;
+
+        data.forEach(function (step) {
+            let totalStepTopics = 0;
+            let completedStepTopics = 0;
+            let subStepsHtml = '';
+
+            if (step.sub_steps) {
+                step.sub_steps.forEach(function (subStep) {
+                    const totalSubStepTopics = subStep.topics.length;
+                    const completedSubStepTopics = subStep.topics.filter(function (t) {
+                        return progressCache[t.id];
+                    }).length;
+                    const isSubStepComplete = totalSubStepTopics > 0 && completedSubStepTopics === totalSubStepTopics;
+                    const subStepProgressClass = isSubStepComplete ? 'completed' : '';
+                    const subStepPercentage = totalSubStepTopics > 0 ? (completedSubStepTopics / totalSubStepTopics) * 100 : 0;
+                    totalStepTopics += totalSubStepTopics;
+                    completedStepTopics += completedSubStepTopics;
+
+                    subStepsHtml += `
+                            <button type="button" class="sub-collapsible ${subStepProgressClass}" style="--progress-width: ${subStepPercentage}%" data-step="${step.step_no}" data-substep="${subStep.sub_step_no}">
+                                <span class="collapsible-title">${subStep.sub_step_no}. ${subStep.sub_step_title.replace(/\n/g, ' ')}</span>
+                                <span class="progress-counter">${completedSubStepTopics}/${totalSubStepTopics}</span>
+                            </button>
+                            <div class="sub-content">
+                                <div class="table-container">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Topic</th>
+                                                <th title="Blog">BLOG</th>
+
+                                                <th title="YouTube">YT</th>
+                                                <th title="LeetCode">LC</th>
+                                                <th title="GeeksForGeeks">GFG</th>
+                                                <th title="CodingNinjas">CN</th>
+                                                <th title="TakeUForward+">TUF</th>
+                                                <th>Done</th>
+                                                <th class="notes-header">Notes</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>`;
+
+                    subStep.topics.forEach(function (topic) {
+                        const isCompleted   = progressCache[topic.id] || false;
+                        const hasNotes      = !!(notesCache[topic.id] && notesCache[topic.id].trim());
+                        const diffClass     = getDifficultyClass(topic.difficulty);
+                        const completedClass = isCompleted ? 'completed' : '';
+                        const checkedAttr   = isCompleted ? 'checked' : '';
+                        const notesBtnClass = hasNotes ? 'notes-btn has-notes' : 'notes-btn';
+                        const notesBtnLabel = hasNotes ? '📝 Edit' : '+ Notes';
+
+                        // Escape the title for safe use in HTML attributes
+                        const safeTitle = topic.question_title
+                            .replace(/&/g,'&amp;').replace(/"/g,'&quot;')
+                            .replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+                        let tags = '';
+                        if (topic.ques_topic) {
+                            try {
+                                const parsedTags = JSON.parse(topic.ques_topic);
+                                tags = parsedTags.map(function (t) { return t.label; }).join(', ');
+                            } catch (e) { /* ignore */ }
+                        }
+
+                        subStepsHtml += `
+                                            <tr class="${diffClass} ${completedClass}"
+                                                data-topic-id="${topic.id}"
+                                                data-topic-title="${safeTitle}">
+                                                <td class="topic-cell" title="${tags}">
+                                                    <div class="topic-title">${topic.question_title}</div>
+                                                </td>
+                                                ${createLinkCell(topic.post_link, 'BLOG')}
+
+                                                ${createLinkCell(topic.yt_link, 'YT')}
+                                                ${createLinkCell(topic.lc_link, 'LC')}
+                                                ${createLinkCell(topic.gfg_link, 'GFG')}
+                                                ${createLinkCell(topic.cs_link, 'CN')}
+                                                ${createLinkCell(topic.plus_link, 'TUF')}
+                                                <td class="status-cell">
+                                                    <input type="checkbox" class="status-checkbox"
+                                                           data-id="${topic.id}" ${checkedAttr}>
+                                                </td>
+                                                <td class="notes-cell">
+                                                    <button type="button"
+                                                            class="${notesBtnClass}"
+                                                            data-id="${topic.id}"
+                                                            data-title="${safeTitle}"
+                                                            title="${hasNotes ? 'Edit notes' : 'Add notes'}">
+                                                        ${notesBtnLabel}
+                                                    </button>
+                                                </td>
+                                            </tr>`;
+                    });
+
+                    subStepsHtml += `
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>`;
+                });
+            }
+
+            const isStepComplete = totalStepTopics > 0 && completedStepTopics === totalStepTopics;
+            const stepProgressClass = isStepComplete ? 'completed' : '';
+            const stepPercentage = totalStepTopics > 0 ? (completedStepTopics / totalStepTopics) * 100 : 0;
+
+            htmlContent += `
+                        <button type="button" class="collapsible ${stepProgressClass}" style="--progress-width: ${stepPercentage}%" data-step="${step.step_no}">
+                            <span class="collapsible-title">Step ${step.step_no}: ${step.step_title}</span>
+                            <span class="progress-counter">${completedStepTopics}/${totalStepTopics}</span>
+                        </button>
+                        <div class="content">${subStepsHtml}</div>`;
+        });
+
+        container.innerHTML = htmlContent;
+    }
+
+    function createLinkCell(url, label) {
+        if (url) {
+            const logo = platformLogos[label] || label;
+            return `<td class="link-cell"><a href="${url}" target="_blank" rel="noopener noreferrer" title="${label}">${logo}</a></td>`;
+        }
+        return `<td class="na-cell">-</td>`;
+    }
+
+    function getDifficultyClass(difficulty) {
+        return ['difficulty-easy', 'difficulty-medium', 'difficulty-hard'][difficulty] || '';
+    }
+
+    // ── Counter updates ──────────────────────────────────────────────
+    function updateCounters(element) {
+        const subStepContent = element.closest('.sub-content');
+        if (subStepContent) {
+            const subStepButton = subStepContent.previousElementSibling;
+            const boxes = Array.from(subStepContent.querySelectorAll('.status-checkbox'));
+            const total = boxes.length;
+            const done  = boxes.filter(function (cb) { return progressCache[cb.dataset.id]; }).length;
+            subStepButton.querySelector('.progress-counter').textContent = done + '/' + total;
+            const pct = total > 0 ? (done / total) * 100 : 0;
+            subStepButton.style.setProperty('--progress-width', pct + '%');
+            subStepButton.classList.toggle('completed', total > 0 && done === total);
+        }
+        const mainContent = element.closest('.content');
+        if (mainContent) {
+            const mainStepButton = mainContent.previousElementSibling;
+            const boxes = Array.from(mainContent.querySelectorAll('.status-checkbox'));
+            const total = boxes.length;
+            const done  = boxes.filter(function (cb) { return progressCache[cb.dataset.id]; }).length;
+            mainStepButton.querySelector('.progress-counter').textContent = done + '/' + total;
+            const pct = total > 0 ? (done / total) * 100 : 0;
+            mainStepButton.style.setProperty('--progress-width', pct + '%');
+            mainStepButton.classList.toggle('completed', total > 0 && done === total);
+        }
+    }
+
+    // ── Notes modal ──────────────────────────────────────────────────
+    function initNotesModal() {
+        const overlay  = document.getElementById('notes-modal-overlay');
+        const textarea = document.getElementById('notes-modal-textarea');
+        const title    = document.getElementById('notes-modal-title');
+        const closeBtn = document.getElementById('notes-modal-close');
+        const cancelBtn = document.getElementById('notes-cancel-btn');
+        const saveBtn  = document.getElementById('notes-save-btn');
+        const status   = document.getElementById('notes-save-status');
+        const charCount = document.getElementById('notes-char-count');
+        const MAX_CHARS = 10000;
+
+        function openModal(topicId, topicTitle) {
+            modalTopicId    = topicId;
+            modalTopicTitle = topicTitle;
+            const existing  = notesCache[topicId] || '';
+            title.textContent   = topicTitle;
+            textarea.value      = existing;
+            status.textContent  = '';
+            status.className    = '';
+            saveBtn.disabled    = false;
+            updateCharCount();
+            overlay.classList.add('open');
+            textarea.focus();
+        }
+
+        function closeModal() {
+            overlay.classList.remove('open');
+            modalTopicId    = null;
+            modalTopicTitle = null;
+        }
+
+        function updateCharCount() {
+            const len = textarea.value.length;
+            charCount.textContent = len + ' / ' + MAX_CHARS;
+            charCount.className   = len > MAX_CHARS * 0.85 ? 'near-limit' : '';
+        }
+
+        textarea.addEventListener('input', updateCharCount);
+
+        // Close on overlay click (outside modal box)
+        overlay.addEventListener('click', function (e) {
+            if (e.target === overlay) closeModal();
+        });
+
+        closeBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+
+        // Esc key closes modal
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && overlay.classList.contains('open')) closeModal();
+        });
+
+        saveBtn.addEventListener('click', async function () {
+            if (!modalTopicId || !modalTopicTitle) return;
+
+            const text = textarea.value.trim();
+            saveBtn.disabled   = true;
+            status.textContent = '💾 Saving…';
+            status.className   = 'saving';
+
+            // Update local cache immediately
+            notesCache[modalTopicId] = text;
+            saveToLocalStorage();
+
+            // Update the Notes button label in the table
+            refreshNotesBtnInTable(modalTopicId, text);
+
+            if (USE_SHEETS) {
+                try {
+                    await pushToSheet(modalTopicTitle, progressCache[modalTopicId] || false, text);
+                    status.textContent = '✅ Saved to Google Sheet';
+                    status.className   = 'saved';
+                    saveBtn.disabled   = false;
+                    // Auto-close after short delay so user sees the confirmation
+                    setTimeout(closeModal, 1000);
+                } catch (err) {
+                    console.error("Notes save error:", err);
+                    status.textContent = '⚠️ Sheet error: ' + err.message + '. Saved locally.';
+                    status.className   = 'error';
+                    saveBtn.disabled   = false;
+                }
+            } else {
+                status.textContent = '✅ Saved locally';
+                status.className   = 'saved';
+                saveBtn.disabled   = false;
+                setTimeout(closeModal, 800);
+            }
+        });
+    }
+
+    // Update the Notes button in the table row after saving
+    function refreshNotesBtnInTable(topicId, text) {
+        const btn = document.querySelector('.notes-btn[data-id="' + topicId + '"]');
+        if (!btn) return;
+        const hasNotes = !!(text && text.trim());
+        btn.className = hasNotes ? 'notes-btn has-notes' : 'notes-btn';
+        btn.textContent = hasNotes ? '📝 Edit' : '+ Notes';
+        btn.title = hasNotes ? 'Edit notes' : 'Add notes';
+    }
+
+    // ── Event listeners ──────────────────────────────────────────────
+    function addEventListeners() {
+        const container    = document.getElementById('roadmap-container');
+        const toggleAllBtn = document.getElementById('toggle-all');
+
+        function updateToggleAllLabel() {
+            if (!toggleAllBtn) return;
+            const hasExpanded = container.querySelector('.collapsible.active, .sub-collapsible.active');
+            toggleAllBtn.textContent = hasExpanded ? 'Collapse all' : 'Expand all';
+        }
+
+        container.addEventListener('click', function (event) {
+            // Notes button click → open modal
+            const notesBtn = event.target.closest('.notes-btn');
+            if (notesBtn) {
+                event.stopPropagation();
+                openNotesModal(notesBtn.dataset.id, notesBtn.dataset.title);
+                return;
+            }
+
+            // Don't collapse section when clicking a notes button
+            if (event.target.closest('.notes-cell')) return;
+
+            const collapsible = event.target.closest('.collapsible, .sub-collapsible');
+            const statusCell  = event.target.closest('.status-cell');
+
+            if (collapsible) {
+                collapsible.classList.toggle('active');
+                const content = collapsible.nextElementSibling;
+                if (content.style.maxHeight) {
+                    content.style.maxHeight = null;
+                } else {
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    const parentContent = content.closest('.content');
+                    if (parentContent && parentContent.style.maxHeight) {
+                        parentContent.style.maxHeight = (parentContent.scrollHeight + content.scrollHeight) + "px";
+                    }
+                }
+                updateToggleAllLabel();
+            }
+
+            if (statusCell) {
+                const checkbox = statusCell.querySelector('.status-checkbox');
+                if (checkbox) {
+                    checkbox.checked = !checkbox.checked;
+                    const topicId       = checkbox.dataset.id;
+                    const isChecked     = checkbox.checked;
+                    const row           = checkbox.closest('tr');
+                    const questionTitle = row ? row.dataset.topicTitle : '';
+
+                    // Update cache and localStorage immediately
+                    progressCache[topicId] = isChecked;
+                    saveToLocalStorage();
+                    checkbox.closest('tr').classList.toggle('completed', isChecked);
+                    updateCounters(checkbox);
+
+                    // Push to Sheet asynchronously
+                    if (USE_SHEETS) {
+                        showStatus('💾 Saving…', 'info', 0);
+                        pushToSheet(questionTitle, isChecked, notesCache[topicId] || '')
+                            .then(function () {
+                                showStatus('✅ Saved to Google Sheet', 'success', 2500);
+                            })
+                            .catch(function (err) {
+                                console.error("Checkbox save error:", err);
+                                showStatus('⚠️ Save failed: ' + err.message + '. Saved locally.', 'error', 6000);
+                            });
+                    }
+                }
+            }
+        });
+
+        if (toggleAllBtn) {
+            toggleAllBtn.addEventListener('click', function () {
+                const allButtons = Array.from(container.querySelectorAll('.collapsible, .sub-collapsible'));
+                const hasExpanded = allButtons.some(function (b) { return b.classList.contains('active'); });
+
+                if (!hasExpanded) {
+                    // Expand nested sections first so parent scrollHeights are correct.
+                    Array.from(container.querySelectorAll('.sub-collapsible')).forEach(function (btn) {
+                        btn.classList.add('active');
+                        const content = btn.nextElementSibling;
+                        if (content) content.style.maxHeight = "none";
+                    });
+                    Array.from(container.querySelectorAll('.collapsible')).forEach(function (btn) {
+                        btn.classList.add('active');
+                        const content = btn.nextElementSibling;
+                        if (content) content.style.maxHeight = "none";
+                    });
+                } else {
+                    Array.from(container.querySelectorAll('.content, .sub-content'))
+                        .forEach(function (c) { c.style.maxHeight = null; });
+                    allButtons.forEach(function (btn) { btn.classList.remove('active'); });
+                }
+
+                updateToggleAllLabel();
+            });
+        }
+
+        updateToggleAllLabel();
+    }
+
+    // ── Open notes modal helper ──────────────────────────────────────
+    function openNotesModal(topicId, topicTitle) {
+        const overlay  = document.getElementById('notes-modal-overlay');
+        const textarea = document.getElementById('notes-modal-textarea');
+        const titleEl  = document.getElementById('notes-modal-title');
+        const status   = document.getElementById('notes-save-status');
+        const saveBtn  = document.getElementById('notes-save-btn');
+        const charCount = document.getElementById('notes-char-count');
+
+        modalTopicId    = topicId;
+        modalTopicTitle = topicTitle;
+
+        const existing = notesCache[topicId] || '';
+        titleEl.textContent   = topicTitle;
+        textarea.value        = existing;
+        status.textContent    = '';
+        status.className      = '';
+        saveBtn.disabled      = false;
+        charCount.textContent = existing.length + ' / 10,000';
+        charCount.className   = existing.length > 8500 ? 'near-limit' : '';
+
+        overlay.classList.add('open');
+        textarea.focus();
+    }
+
+    function handleError(error) {
+        console.error('Error:', error);
+        document.getElementById('roadmap-container').innerHTML = `
+            <h1>Error</h1>
+            <p>Could not load the roadmap. Please ensure 'a2z.json' is in the same directory and correctly formatted.</p>
+            <p><em>${error.message}</em></p>`;
+    }
+    </script>
+</body>
+</html>
