@@ -6,7 +6,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="darkreader-lock">
     <title>A2Z DSA Course Roadmap</title>
+    <!-- Google Identity Services — for Sign in with Google -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
+        /* ── Login screen ── */
+        #login-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            gap: 1.5rem;
+            background: #282828;
+        }
+
+        #login-card {
+            background: #353535;
+            border: 1px solid #555;
+            border-radius: 16px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            max-width: 380px;
+            width: 90%;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+        }
+
+        #login-card h1 {
+            font-size: 1.6rem;
+            color: #fff;
+            margin: 0 0 0.4rem;
+            border: none;
+            padding: 0;
+        }
+
+        #login-card p {
+            color: #aaa;
+            font-size: 0.9rem;
+            margin: 0 0 1.8rem;
+            line-height: 1.5;
+        }
+
+        #login-card .lock-icon {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+        }
+
+        #login-error {
+            color: #f5a6a6;
+            font-size: 0.85rem;
+            margin-top: 1rem;
+            display: none;
+        }
+
+        #login-error.show { display: block; }
         :root {
             --primary-color: #404269;
             --primary-hover-color: #53557E;
@@ -461,15 +513,27 @@
 </head>
 
 <body>
+    <!-- Login screen — shown until Google OAuth confirms identity -->
+    <div id="login-screen">
+        <div id="login-card">
+            <div class="lock-icon">🔒</div>
+            <h1>A2Z DSA Tracker</h1>
+            <p>This is a private tracker.<br>Sign in with your Google account to continue.</p>
+            <!-- Google renders its button inside this div -->
+            <div id="g_id_signin"></div>
+            <div id="login-error">⚠️ Access denied. Only the owner can use this tracker.</div>
+        </div>
+    </div>
+
     <!-- Sync status banner: in static HTML so showStatus() always finds it -->
     <div id="sync-status"></div>
 
-    <div id="roadmap-container" class="container">
+    <div id="roadmap-container" class="container" style="display:none">
         <h1>Loading Roadmap…</h1>
     </div>
 
     <!-- Notes modal: one shared modal for all 455 questions -->
-    <div id="notes-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="notes-modal-title">
+    <div id="notes-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="notes-modal-title" style="display:none">
         <div id="notes-modal">
             <div id="notes-modal-header">
                 <span id="notes-modal-title">Notes</span>
@@ -489,14 +553,111 @@
 
     <script>
     // ═══════════════════════════════════════════════════════════════════
-    //  CONFIGURATION — paste your Apps Script Web App URL here
-    //  (from Deploy → Manage deployments in Apps Script)
+    //  CONFIGURATION
     // ═══════════════════════════════════════════════════════════════════
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxQKdm_HvqqgwUCg0vhn34p99sTl1gvmbRFZxs9OfHMqr_glyRQIPc3zJZNyeK6iwiHBA/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxiUTSRjcLJEfLUSisp-Y6-wLRGBcuKCohuaKwL3DM2q8JSQxSswOFFvu04UCYCcZPLWg/exec";
     // Example: "https://script.google.com/macros/s/AKfycb.../exec"
+
+    // ── Auth config ──────────────────────────────────────────────────
+    // Your Google Client ID
+    const GOOGLE_CLIENT_ID = "453398305483-i4bk0070i01vu7nlkl74p8f11bdp3g5m.apps.googleusercontent.com";
+    // .apps.googleusercontent.com
+
+    
+    const ALLOWED_EMAIL = "kartikverma378@gmail.com";
+    // Example: ""
     // ═══════════════════════════════════════════════════════════════════
 
     const USE_SHEETS = true;
+
+    // Stores the verified ID token from Google — sent with every Sheet request
+    // so the Apps Script can verify it server-side
+    let googleIdToken = sessionStorage.getItem('gid_token') || null;
+
+    // ── Google OAuth ─────────────────────────────────────────────────
+    // Called automatically by Google Identity Services after the user
+    // completes sign-in. The credential is a signed JWT from Google.
+    function handleGoogleSignIn(response) {
+        const token   = response.credential;
+        const payload = parseJwt(token);
+
+        if (!payload || !payload.email) {
+            showLoginError("Could not read account info. Please try again.");
+            return;
+        }
+
+        if (payload.email.toLowerCase() !== ALLOWED_EMAIL.toLowerCase()) {
+            showLoginError("Access denied. Only " + ALLOWED_EMAIL + " can use this tracker.");
+            return;
+        }
+
+        // ✅ Correct owner — store token and boot the app
+        googleIdToken = token;
+        sessionStorage.setItem('gid_token', token);
+        localStorage.setItem('gid_remember', '1');
+        document.getElementById('login-screen').style.display  = 'none';
+        document.getElementById('roadmap-container').style.display = '';
+        document.getElementById('notes-modal-overlay').style.display = '';
+        bootApp();
+    }
+
+    function showLoginError(msg) {
+        const el = document.getElementById('login-error');
+        el.textContent = '⚠️ ' + msg;
+        el.classList.add('show');
+    }
+
+    // Decode the JWT payload (no verification needed client-side —
+    // Google already signed it; the Apps Script verifies it server-side)
+    function parseJwt(token) {
+        try {
+            const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+            return JSON.parse(atob(base64));
+        } catch (e) {
+            return null;
+        }
+    }
+
+    // Initialise the Google Sign-In button once the GIS library is ready
+        function initGoogleSignIn() {
+        if (typeof google === 'undefined' || !google.accounts) {
+            setTimeout(initGoogleSignIn, 200);
+            return;
+        }
+
+        // If we already have a valid saved token, skip the login screen entirely
+        if (googleIdToken) {
+            const payload = parseJwt(googleIdToken);
+            const now = Math.floor(Date.now() / 1000);
+            if (payload && payload.exp && payload.exp > now &&
+                payload.email && payload.email.toLowerCase() === ALLOWED_EMAIL.toLowerCase()) {
+                // Token is still valid — boot directly, no login screen needed
+                document.getElementById('login-screen').style.display  = 'none';
+                document.getElementById('roadmap-container').style.display = '';
+                document.getElementById('notes-modal-overlay').style.display = '';
+                bootApp();
+                return;
+            } else {
+                // Token expired — clear it and fall through to show login
+                googleIdToken = null;
+                sessionStorage.removeItem('gid_token');
+            }
+        }
+
+        google.accounts.id.initialize({
+            client_id: GOOGLE_CLIENT_ID,
+            callback:  handleGoogleSignIn,
+            auto_select: true   // silently signs in if user already consented
+        });
+        google.accounts.id.renderButton(
+            document.getElementById('g_id_signin'),
+            { theme: 'filled_black', size: 'large', text: 'signin_with', shape: 'rectangular' }
+        );
+        // Only prompt One Tap if they've logged in before on this browser
+        if (localStorage.getItem('gid_remember')) {
+            google.accounts.id.prompt();
+        }
+    }
 
     // localStorage keys — used as offline fallback when Sheet is unreachable
     const STORAGE_KEY       = 'dsaRoadmapProgress';
@@ -570,7 +731,8 @@
     //  Using GET with URL-encoded params bypasses the preflight entirely.
 
     async function loadFromSheet() {
-        const url = APPS_SCRIPT_URL + "?action=getAll";
+        const params = new URLSearchParams({ action: "getAll", token: googleIdToken });
+        const url = APPS_SCRIPT_URL + "?" + params.toString();
         const res = await fetch(url);
         if (!res.ok) throw new Error("HTTP " + res.status);
         const data = await res.json();
@@ -592,7 +754,8 @@
             action: "update",
             title:  topicTitle,
             done:   done ? "true" : "false",
-            notes:  notes || ""
+            notes:  notes || "",
+            token:  googleIdToken    // Google ID token verified server-side
         });
         const url = APPS_SCRIPT_URL + "?" + params.toString();
         const res = await fetch(url);
@@ -603,7 +766,13 @@
     }
 
     // ── Bootstrap ────────────────────────────────────────────────────
+    // Start by showing the login screen and initialising Google Sign-In.
+    // bootApp() is called only after the owner's identity is confirmed.
     document.addEventListener('DOMContentLoaded', function () {
+        initGoogleSignIn();
+    });
+
+    function bootApp() {
         fetch('a2z.json')
             .then(function (response) {
                 if (!response.ok) throw new Error('Could not load a2z.json. Make sure it is in the same folder.');
@@ -642,7 +811,7 @@
                 initNotesModal();
             })
             .catch(handleError);
-    });
+    }
 
     // ── Roadmap rendering ────────────────────────────────────────────
     function generateRoadmap(data) {
