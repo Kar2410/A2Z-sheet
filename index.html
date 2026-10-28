@@ -9,62 +9,58 @@
     <!-- Google Identity Services — for Sign in with Google -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
-        /* ══════════════════════════════════════════════════════════════
-           DESIGN TOKENS
-        ══════════════════════════════════════════════════════════════ */
+        /* ══════════════════════════════════════════════
+           TOKENS
+        ══════════════════════════════════════════════ */
         :root {
-            /* palette */
-            --bg:               #1a1a2e;
-            --surface:          #16213e;
-            --surface-2:        #0f3460;
-            --step-bg:          #1e2a45;
-            --step-hover:       #253352;
-            --substep-bg:       #1a2438;
-            --substep-hover:    #1f2d47;
-            --done-bg:          #0d3320;
-            --done-hover:       #0f3d26;
-            --row-alt:          rgba(255,255,255,0.02);
-            --row-done-bg:      rgba(22,160,80,0.08);
-
-            /* accent */
-            --green:            #1db954;
-            --green-dim:        #168f3f;
-            --blue:             #4a9eff;
-            --orange:           #f5a623;
-            --red:              #e52d27;
-            --text:             #e8eaf0;
-            --text-dim:         #8892a4;
-            --text-done:        #5eead4;
-            --border:           rgba(255,255,255,0.08);
-            --border-strong:    rgba(255,255,255,0.14);
-
-            /* sizing */
-            --radius-lg:        10px;
-            --radius-md:        7px;
-            --radius-sm:        5px;
+            --bg:           #0f1117;
+            --surface:      #161b27;
+            --card:         #1c2333;
+            --card-hover:   #212840;
+            --card-done:    #0d2118;
+            --step-bg:      #1a2035;
+            --step-hover:   #1f2a45;
+            --sub-bg:       #141926;
+            --sub-hover:    #192030;
+            --border:       rgba(255,255,255,0.07);
+            --border-hi:    rgba(255,255,255,0.13);
+            --green:        #22c55e;
+            --green-dim:    #16a34a;
+            --blue:         #3b82f6;
+            --orange:       #f59e0b;
+            --red:          #ef4444;
+            --text:         #e2e8f0;
+            --text-dim:     #64748b;
+            --text-done:    #4ade80;
+            --radius:       8px;
         }
 
-        /* ══════════════════════════════════════════════════════════════
-           RESET / BASE
-        ══════════════════════════════════════════════════════════════ */
-        *, *::before, *::after { box-sizing: border-box; }
-
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { font-size: 14px; }
         @media (max-width: 600px) { html { font-size: 12px; } }
 
         body {
-            margin: 0;
-            padding: 0;
             background: var(--bg);
             color: var(--text);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
         }
 
-        /* ══════════════════════════════════════════════════════════════
-           LOGIN SCREEN
-        ══════════════════════════════════════════════════════════════ */
+        /* ══════════════════════════════════════════════
+           LOGIN
+        ══════════════════════════════════════════════ */
+        #login-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            gap: 1.5rem;
+            background: #282828;
+        }
+
+        /* ── Login card ── */
         #login-screen {
             display: flex;
             flex-direction: column;
@@ -75,530 +71,386 @@
         }
 
         #login-card {
-            background: var(--surface);
-            border: 1px solid var(--border-strong);
+            background: var(--card);
+            border: 1px solid var(--border-hi);
             border-radius: 16px;
-            padding: 2.5rem 2rem;
+            padding: 2.4rem 2rem;
             text-align: center;
             max-width: 360px;
             width: 90%;
             box-shadow: 0 20px 60px rgba(0,0,0,0.5);
         }
 
-        #login-card .lock-icon { font-size: 2.4rem; margin-bottom: 0.6rem; }
+        #login-card .lock-icon { font-size: 2.2rem; margin-bottom: 0.5rem; }
 
         #login-card h1 {
-            font-size: 1.4rem;
-            color: var(--text);
-            margin: 0 0 0.4rem;
-            border: none;
-            padding: 0;
-            font-weight: 700;
+            font-size: 1.3rem; font-weight: 700;
+            color: var(--text); margin: 0 0 0.4rem;
+            border: none; padding: 0;
         }
 
         #login-card p {
-            color: var(--text-dim);
-            font-size: 0.85rem;
-            margin: 0 0 1.6rem;
-            line-height: 1.6;
+            color: var(--text-dim); font-size: 0.82rem;
+            margin: 0 0 1.5rem; line-height: 1.6;
         }
 
         #login-error {
-            color: #f5a6a6;
-            font-size: 0.82rem;
-            margin-top: 0.9rem;
-            display: none;
+            color: #fca5a5; font-size: 0.8rem;
+            margin-top: 0.8rem; display: none;
         }
         #login-error.show { display: block; }
 
-        /* ══════════════════════════════════════════════════════════════
-           SYNC STATUS BANNER
-        ══════════════════════════════════════════════════════════════ */
+        /* ── Sync status ── */
         #sync-status {
-            position: fixed;
-            top: 0.5rem;
-            left: 50%;
+            position: fixed; top: 0.6rem; left: 50%;
             transform: translateX(-50%);
-            z-index: 999;
-            font-size: 0.75rem;
-            padding: 0.3rem 1rem;
-            border-radius: 20px;
-            white-space: nowrap;
-            display: none;
-            pointer-events: none;
+            z-index: 900; font-size: 0.72rem;
+            padding: 0.28rem 0.9rem; border-radius: 20px;
+            white-space: nowrap; display: none; pointer-events: none;
         }
-        #sync-status.info    { display: block; background: #1a3a5c; color: #aad4f5; }
-        #sync-status.success { display: block; background: #0d3320; color: #5eead4; }
-        #sync-status.error   { display: block; background: #4a1a1a; color: #f5a6a6; }
-        #sync-status.warning { display: block; background: #3a2a00; color: #f5d06e; }
+        #sync-status.info    { display:block; background:#1e3a5f; color:#93c5fd; }
+        #sync-status.success { display:block; background:#14532d; color:#86efac; }
+        #sync-status.error   { display:block; background:#450a0a; color:#fca5a5; }
+        #sync-status.warning { display:block; background:#451a03; color:#fcd34d; }
 
-        /* ══════════════════════════════════════════════════════════════
-           MAIN CONTAINER  — full-width, no card box
-        ══════════════════════════════════════════════════════════════ */
+        /* ── Page shell ── */
         .container {
-            max-width: 1100px;
+            max-width: 980px;
             margin: 0 auto;
-            padding: 1rem 1.2rem 3rem;
+            padding: 0.8rem 1rem 3rem;
         }
 
-        /* ══════════════════════════════════════════════════════════════
-           PAGE HEADER
-        ══════════════════════════════════════════════════════════════ */
+        /* ── Page header ── */
         .roadmap-header {
-            display: flex;
-            align-items: center;
+            display: flex; align-items: center;
             justify-content: space-between;
-            padding: 1rem 0 1rem;
+            padding: 0.8rem 0 0.8rem;
             border-bottom: 1px solid var(--border);
-            margin-bottom: 1rem;
-            flex-wrap: wrap;
-            gap: 0.6rem;
+            margin-bottom: 0.8rem;
+            flex-wrap: wrap; gap: 0.5rem;
         }
 
         .roadmap-header h1 {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: var(--text);
-            margin: 0;
-            letter-spacing: -0.01em;
+            font-size: 1.1rem; font-weight: 700;
+            color: var(--text); margin: 0;
         }
 
         .header-right {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            flex-wrap: wrap;
+            display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap;
         }
 
-        #user-display {
-            font-size: 0.75rem;
-            color: var(--text-dim);
-        }
+        #user-display { font-size: 0.7rem; color: var(--text-dim); }
 
         .toggle-all-btn {
-            font-size: 0.72rem;
-            font-weight: 600;
-            padding: 0.3rem 0.75rem;
-            border-radius: 20px;
-            border: 1px solid var(--border-strong);
-            background: var(--surface);
-            color: var(--text);
-            cursor: pointer;
-            transition: background 0.2s;
+            font-size: 0.7rem; font-weight: 600;
+            padding: 0.28rem 0.7rem; border-radius: 20px;
+            border: 1px solid var(--border-hi);
+            background: var(--card); color: var(--text);
+            cursor: pointer; transition: background 0.15s;
         }
-        .toggle-all-btn:hover { background: var(--step-hover); }
+        .toggle-all-btn:hover { background: var(--card-hover); }
 
         .logout-btn {
-            font-size: 0.72rem;
-            font-weight: 600;
-            padding: 0.3rem 0.75rem;
-            border-radius: 20px;
-            border: 1px solid rgba(229,45,39,0.4);
-            background: transparent;
-            color: #e57373;
-            cursor: pointer;
-            transition: background 0.2s;
+            font-size: 0.7rem; font-weight: 600;
+            padding: 0.28rem 0.7rem; border-radius: 20px;
+            border: 1px solid rgba(239,68,68,0.35);
+            background: transparent; color: #f87171;
+            cursor: pointer; transition: background 0.15s;
         }
-        .logout-btn:hover { background: rgba(229,45,39,0.1); }
+        .logout-btn:hover { background: rgba(239,68,68,0.08); }
 
-        /* ══════════════════════════════════════════════════════════════
-           STEP (MAIN COLLAPSIBLE)
-        ══════════════════════════════════════════════════════════════ */
+        /* ══════════════════════════════════════════════
+           STEP HEADER  (main collapsible)
+        ══════════════════════════════════════════════ */
         .collapsible {
-            width: 100%;
-            border: none;
-            text-align: left;
-            outline: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
-            padding: 0.65rem 0.9rem;
-            margin-top: 0.5rem;
-            border-radius: var(--radius-lg);
+            width: 100%; border: none; outline: none;
+            display: flex; align-items: center; gap: 0.6rem;
+            padding: 0.6rem 0.9rem;
+            margin-top: 0.45rem;
+            border-radius: var(--radius);
             background: var(--step-bg);
             color: var(--text);
-            font-size: 0.92rem;
-            font-weight: 600;
-            position: relative;
-            overflow: hidden;
-            transition: background 0.2s;
-            z-index: 1;
+            font-size: 0.88rem; font-weight: 600;
+            cursor: pointer; text-align: left;
+            position: relative; overflow: hidden;
+            transition: background 0.15s;
         }
 
+        /* progress fill behind text */
         .collapsible::before {
             content: '';
-            position: absolute;
-            inset: 0;
+            position: absolute; inset: 0;
             width: var(--progress-width, 0%);
             background: var(--green-dim);
-            opacity: 0.35;
+            opacity: 0.22;
             transition: width 0.4s ease-out;
-            z-index: 0;
         }
 
-        .collapsible:hover  { background: var(--step-hover); }
-        .collapsible.completed { background: var(--done-bg); }
-        .collapsible.completed:hover { background: var(--done-hover); }
+        .collapsible:hover     { background: var(--step-hover); }
+        .collapsible.completed { background: #0c2414; }
+        .collapsible.completed:hover { background: #0f2e1a; }
 
-        /* ══════════════════════════════════════════════════════════════
-           SUB-STEP (NESTED COLLAPSIBLE)
-        ══════════════════════════════════════════════════════════════ */
+        /* ══════════════════════════════════════════════
+           SUB-STEP HEADER
+        ══════════════════════════════════════════════ */
         .sub-collapsible {
-            width: 100%;
-            border: none;
-            text-align: left;
-            outline: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 0.85rem 0.5rem 1.4rem;
-            margin-top: 0.25rem;
-            border-radius: var(--radius-md);
-            background: var(--substep-bg);
+            width: 100%; border: none; outline: none;
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.45rem 0.8rem 0.45rem 1.6rem;
+            margin-top: 0.2rem;
+            border-radius: 6px;
+            background: var(--sub-bg);
             color: var(--text-dim);
-            font-size: 0.82rem;
-            font-weight: 500;
-            position: relative;
-            overflow: hidden;
-            transition: background 0.2s, color 0.2s;
-            z-index: 1;
+            font-size: 0.8rem; font-weight: 500;
+            cursor: pointer; text-align: left;
+            position: relative; overflow: hidden;
+            transition: background 0.15s, color 0.15s;
         }
 
-        .sub-collapsible::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            width: var(--progress-width, 0%);
-            background: var(--green);
-            opacity: 0.18;
-            transition: width 0.4s ease-out;
-            z-index: 0;
-        }
-
-        .sub-collapsible:hover  { background: var(--substep-hover); color: var(--text); }
-        .sub-collapsible.completed { background: var(--done-bg); color: var(--text-done); }
-        .sub-collapsible.completed:hover { background: var(--done-hover); }
-
-        /* shared title / counter / toggle icon */
-        .collapsible-title,
-        .progress-counter,
-        .collapsible::after,
+        /* thin progress line at bottom */
         .sub-collapsible::after {
-            position: relative;
-            z-index: 1;
+            content: '';
+            position: absolute; bottom: 0; left: 1.6rem;
+            height: 2px;
+            width: var(--progress-width, 0%);
+            background: var(--blue);
+            border-radius: 2px;
+            transition: width 0.4s ease-out;
         }
 
-        .collapsible-title { flex: 1; }
+        .sub-collapsible:hover     { background: var(--sub-hover); color: var(--text); }
+        .sub-collapsible.completed { background: #0a1e10; color: var(--text-done); }
+        .sub-collapsible.completed:hover { background: #0c2414; }
+
+        /* shared title + counter + toggle chevron */
+        .collapsible-title { flex: 1; position: relative; z-index: 1; }
 
         .progress-counter {
-            font-size: 0.68rem;
-            font-weight: 600;
-            background: rgba(0,0,0,0.3);
-            padding: 0.15rem 0.55rem;
-            border-radius: 20px;
+            font-size: 0.68rem; font-weight: 600;
+            color: var(--text-dim);
             white-space: nowrap;
-            color: var(--text);
+            position: relative; z-index: 1;
         }
 
-        .collapsible::after,
-        .sub-collapsible::after {
-            content: '+';
-            font-size: 1rem;
-            font-weight: 700;
-            width: 1.4rem;
-            height: 1.4rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.07);
-            transition: transform 0.25s ease;
-            flex-shrink: 0;
+        /* chevron toggle — replaces + × */
+        .step-chevron {
+            width: 16px; height: 16px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; position: relative; z-index: 1;
+            color: var(--text-dim);
+            transition: transform 0.22s ease;
         }
+        .step-chevron svg { width: 14px; height: 14px; }
+        .collapsible.active .step-chevron,
+        .sub-collapsible.active .step-chevron { transform: rotate(90deg); }
 
-        .collapsible.active::after,
-        .sub-collapsible.active::after { transform: rotate(45deg); }
-
-        /* ══════════════════════════════════════════════════════════════
+        /* ══════════════════════════════════════════════
            COLLAPSE PANELS
-        ══════════════════════════════════════════════════════════════ */
+        ══════════════════════════════════════════════ */
         .content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.35s ease-in-out;
-            padding: 0 0 0 0.4rem;
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.32s ease-in-out;
+            padding-left: 0.3rem;
         }
-
         .sub-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.35s ease-in-out;
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.32s ease-in-out;
         }
 
-        /* ══════════════════════════════════════════════════════════════
-           TABLE
-        ══════════════════════════════════════════════════════════════ */
-        .table-container {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            margin-top: 0.3rem;
-            margin-bottom: 0.4rem;
-            border-radius: var(--radius-md);
-            border: 1px solid var(--border);
+        /* ══════════════════════════════════════════════
+           TOPIC LIST  (replaces table)
+        ══════════════════════════════════════════════ */
+        .topic-list { padding: 0.15rem 0 0.25rem; }
+
+        .topic-row {
+            display: flex; align-items: center;
+            gap: 0.55rem;
+            padding: 0 0.7rem;
+            min-height: 42px;
+            border-radius: 6px;
+            margin: 1px 0;
+            cursor: default;
+            transition: background 0.12s;
+            border-left: 2px solid transparent;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            table-layout: fixed;
-            min-width: 720px;
-            background: var(--surface);
-        }
-
-        th {
-            background: rgba(255,255,255,0.04);
-            color: var(--text-dim);
-            font-size: 0.68rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-            padding: 0.45rem 0.3rem;
-            text-align: center;
-            border-bottom: 1px solid var(--border);
-        }
-
-        td {
-            padding: 0.3rem 0.25rem;
-            text-align: center;
-            vertical-align: middle;
-            border-bottom: 1px solid var(--border);
-            font-size: 0.8rem;
-            color: var(--text);
-        }
-
-        tr:last-child td { border-bottom: none; }
-        tr:nth-child(even) { background: var(--row-alt); }
-        tr:hover td { background: rgba(255,255,255,0.03); }
-
-        /* column widths */
-        .topic-cell   { text-align: left; width: 33%; font-weight: 500; }
-        .notes-header { width: 9%; }
-        thead th:not(.topic-cell):not(.notes-header) { width: 6.5%; }
-
-        .topic-title {
-            font-size: 0.8rem;
-            padding: 0.2rem 0.4rem;
-            line-height: 1.4;
-            color: var(--text);
-        }
-
-        /* completed rows */
-        tr.completed td { background: var(--row-done-bg) !important; }
-        tr.completed .topic-title { color: var(--text-done); }
-        tr.completed a { color: var(--text-done) !important; }
-
-        /* difficulty left border */
-        .difficulty-easy   td:first-child { border-left: 3px solid var(--green); }
-        .difficulty-medium td:first-child { border-left: 3px solid var(--orange); }
-        .difficulty-hard   td:first-child { border-left: 3px solid var(--red); }
-
-        /* icon cells */
-        .link-cell { cursor: pointer; transition: background 0.15s; }
-        .link-cell:hover { background: rgba(255,255,255,0.05) !important; }
-        .link-cell a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.3rem;
-            color: var(--text-dim);
-            text-decoration: none;
-        }
-        .link-cell img { width: 20px; height: 20px; }
-        .na-cell { color: #444; font-size: 0.9rem; }
+        .topic-row:hover { background: var(--card-hover); }
+        .topic-row.completed { background: var(--card-done); border-left-color: var(--green-dim); }
+        .topic-row.completed:hover { background: #0f2a18; }
+        .topic-row.difficulty-medium { border-left-color: var(--orange); }
+        .topic-row.difficulty-hard   { border-left-color: var(--red); }
+        .topic-row.difficulty-easy   { border-left-color: var(--green); }
+        .topic-row.completed.difficulty-medium,
+        .topic-row.completed.difficulty-hard,
+        .topic-row.completed.difficulty-easy { border-left-color: var(--green-dim); }
 
         /* checkbox */
-        .status-cell { cursor: pointer; }
+        .status-cell { cursor: pointer; flex-shrink: 0; }
 
         .status-checkbox {
-            -webkit-appearance: none;
-            appearance: none;
+            -webkit-appearance: none; appearance: none;
+            width: 16px; height: 16px;
+            border: 1.5px solid var(--text-dim);
+            border-radius: 4px;
             background: transparent;
-            margin: auto;
-            width: 1rem;
-            height: 1rem;
-            border: 0.13em solid var(--text-dim);
-            border-radius: 0.2em;
-            display: grid;
-            place-content: center;
+            display: grid; place-content: center;
             pointer-events: none;
-            transition: border-color 0.15s;
+            transition: border-color 0.15s, background 0.15s;
+            flex-shrink: 0;
         }
-
         .status-checkbox::before {
             content: "";
-            width: 0.55em;
-            height: 0.55em;
+            width: 8px; height: 8px;
             clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
             transform: scale(0);
             transform-origin: bottom left;
             transition: 120ms transform ease-in-out;
             box-shadow: inset 1em 1em var(--green);
         }
-
-        .status-checkbox:checked { border-color: var(--green); }
+        .status-checkbox:checked { border-color: var(--green); background: rgba(34,197,94,0.12); }
         .status-checkbox:checked::before { transform: scale(1); }
 
-        /* notes cell */
-        .notes-cell { padding: 0.2rem; }
+        /* topic name */
+        .topic-name {
+            flex: 1;
+            font-size: 0.82rem;
+            font-weight: 450;
+            color: var(--text);
+            line-height: 1.3;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .topic-row.completed .topic-name { color: var(--text-done); }
 
+        /* icon group on the right */
+        .topic-icons {
+            display: flex; align-items: center;
+            gap: 0.15rem; flex-shrink: 0;
+        }
+
+        .icon-link {
+            display: flex; align-items: center; justify-content: center;
+            width: 26px; height: 26px; border-radius: 5px;
+            color: var(--text-dim);
+            text-decoration: none;
+            transition: background 0.12s, color 0.12s;
+            flex-shrink: 0;
+        }
+        .icon-link:hover { background: rgba(255,255,255,0.08); color: var(--text); }
+        .icon-link img { width: 17px; height: 17px; object-fit: contain; }
+        .icon-link.na { opacity: 0.15; pointer-events: none; cursor: default; }
+
+        /* notes button */
         .notes-btn {
-            font-size: 0.68rem;
-            padding: 0.2rem 0.45rem;
-            border-radius: var(--radius-sm);
-            border: 1px solid var(--border-strong);
+            font-size: 0.65rem; font-weight: 500;
+            padding: 0.18rem 0.45rem;
+            border-radius: 4px;
+            border: 1px solid var(--border-hi);
             background: transparent;
             color: var(--text-dim);
-            cursor: pointer;
-            white-space: nowrap;
-            transition: background 0.15s, color 0.15s, border-color 0.15s;
+            cursor: pointer; white-space: nowrap;
+            transition: background 0.12s, color 0.12s, border-color 0.12s;
+            flex-shrink: 0;
         }
         .notes-btn:hover { background: rgba(255,255,255,0.06); color: var(--text); }
-        .notes-btn.has-notes { color: var(--orange); border-color: rgba(245,166,35,0.4); }
-        tr.completed .notes-btn { color: var(--text-done); border-color: rgba(94,234,212,0.3); }
+        .notes-btn.has-notes { color: var(--orange); border-color: rgba(245,158,11,0.4); }
+        .topic-row.completed .notes-btn { color: var(--text-done); border-color: rgba(74,222,128,0.3); }
 
-        /* ══════════════════════════════════════════════════════════════
+        /* ══════════════════════════════════════════════
            NOTES MODAL
-        ══════════════════════════════════════════════════════════════ */
+        ══════════════════════════════════════════════ */
         #notes-modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.7);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.72); z-index: 1000;
+            align-items: center; justify-content: center;
         }
         #notes-modal-overlay.open { display: flex; }
 
         #notes-modal {
-            background: #1e2535;
-            border: 1px solid var(--border-strong);
+            background: var(--card);
+            border: 1px solid var(--border-hi);
             border-radius: 12px;
-            width: min(600px, 94vw);
-            max-height: 82vh;
-            display: flex;
-            flex-direction: column;
+            width: min(580px, 94vw); max-height: 80vh;
+            display: flex; flex-direction: column;
             box-shadow: 0 24px 64px rgba(0,0,0,0.6);
             overflow: hidden;
         }
 
         #notes-modal-header {
-            background: var(--surface-2);
-            padding: 0.8rem 1.1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.6rem;
+            background: var(--step-bg);
+            padding: 0.75rem 1rem;
+            display: flex; align-items: center; gap: 0.6rem;
+            border-bottom: 1px solid var(--border);
         }
 
         #notes-modal-title {
-            flex: 1;
-            font-size: 0.88rem;
-            font-weight: 600;
-            color: var(--text);
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
+            flex: 1; font-size: 0.85rem; font-weight: 600;
+            color: var(--text); overflow: hidden;
+            text-overflow: ellipsis; white-space: nowrap;
         }
 
         #notes-modal-close {
-            background: none;
-            border: none;
-            color: var(--text-dim);
-            font-size: 1.1rem;
-            cursor: pointer;
-            padding: 0.1rem 0.3rem;
-            border-radius: 4px;
-            line-height: 1;
+            background: none; border: none;
+            color: var(--text-dim); font-size: 1rem;
+            cursor: pointer; padding: 0.1rem 0.3rem;
+            border-radius: 4px; line-height: 1;
         }
-        #notes-modal-close:hover { color: var(--text); background: rgba(255,255,255,0.08); }
+        #notes-modal-close:hover { color: var(--text); background: rgba(255,255,255,0.07); }
 
-        #notes-modal-body {
-            padding: 0.9rem 1.1rem;
-            flex: 1;
-            overflow-y: auto;
-        }
+        #notes-modal-body { padding: 0.85rem 1rem; flex: 1; overflow-y: auto; }
 
         #notes-modal-textarea {
-            width: 100%;
-            background: #141b2d;
+            width: 100%; background: #0f1117;
             color: var(--text);
-            border: 1px solid var(--border-strong);
-            border-radius: var(--radius-md);
-            padding: 0.7rem 0.8rem;
-            font-size: 0.85rem;
-            font-family: inherit;
-            resize: vertical;
-            min-height: 200px;
-            line-height: 1.65;
+            border: 1px solid var(--border-hi);
+            border-radius: 6px;
+            padding: 0.65rem 0.75rem;
+            font-size: 0.82rem; font-family: inherit;
+            resize: vertical; min-height: 190px; line-height: 1.65;
             transition: border-color 0.2s;
         }
         #notes-modal-textarea:focus {
-            outline: none;
-            border-color: var(--blue);
-            box-shadow: 0 0 0 3px rgba(74,158,255,0.12);
+            outline: none; border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
         }
 
         #notes-char-count {
-            font-size: 0.68rem;
-            color: var(--text-dim);
-            text-align: right;
-            margin-top: 0.3rem;
+            font-size: 0.65rem; color: var(--text-dim);
+            text-align: right; margin-top: 0.3rem;
         }
         #notes-char-count.near-limit { color: var(--orange); }
 
         #notes-modal-footer {
-            padding: 0.65rem 1.1rem 0.8rem;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 0.6rem;
+            padding: 0.6rem 1rem 0.75rem;
+            display: flex; align-items: center;
+            justify-content: space-between; gap: 0.6rem;
             border-top: 1px solid var(--border);
-            background: rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.15);
         }
 
-        #notes-save-status {
-            font-size: 0.75rem;
-            flex: 1;
-            color: var(--text-dim);
-        }
+        #notes-save-status { font-size: 0.72rem; flex: 1; color: var(--text-dim); }
         #notes-save-status.saving { color: var(--orange); }
         #notes-save-status.saved  { color: var(--green); }
         #notes-save-status.error  { color: var(--red); }
 
         .modal-btn {
-            padding: 0.4rem 1rem;
-            border-radius: var(--radius-sm);
-            font-size: 0.8rem;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            transition: opacity 0.2s, background 0.2s;
+            padding: 0.38rem 0.9rem;
+            border-radius: 6px;
+            font-size: 0.78rem; font-weight: 600;
+            cursor: pointer; border: none;
+            transition: opacity 0.15s, background 0.15s;
         }
-        .modal-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+        .modal-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
         #notes-cancel-btn {
-            background: rgba(255,255,255,0.07);
+            background: rgba(255,255,255,0.06);
             color: var(--text-dim);
-            border: 1px solid var(--border-strong);
+            border: 1px solid var(--border-hi);
         }
-        #notes-cancel-btn:hover:not(:disabled) { background: rgba(255,255,255,0.12); }
+        #notes-cancel-btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); }
 
-        #notes-save-btn {
-            background: var(--green);
-            color: #fff;
-        }
+        #notes-save-btn { background: var(--green); color: #fff; }
         #notes-save-btn:hover:not(:disabled) { background: var(--green-dim); }
     </style>
 </head>
@@ -663,7 +515,10 @@
 
     // Stores the verified ID token from Google — sent with every Sheet request
     // so the Apps Script can verify it server-side
-    let googleIdToken = sessionStorage.getItem('gid_token') || null;
+    // Token stored in localStorage so login persists across tab closes / browser restarts.
+    // Google ID tokens expire after ~1 hour; initGoogleSignIn checks expiry and uses
+    // One Tap silent re-auth to get a fresh token without showing the login screen.
+    let googleIdToken = localStorage.getItem('gid_token') || null;
 
     // ── Google OAuth ─────────────────────────────────────────────────
     // Called automatically by Google Identity Services after the user
@@ -684,7 +539,7 @@
 
         // ✅ Correct owner — store token and boot the app
         googleIdToken = token;
-        sessionStorage.setItem('gid_token', token);
+        localStorage.setItem('gid_token', token);
         localStorage.setItem('gid_remember', '1');
         document.getElementById('login-screen').style.display  = 'none';
         document.getElementById('roadmap-container').style.display = '';
@@ -731,7 +586,7 @@
             } else {
                 // Token expired — clear it and fall through to show login
                 googleIdToken = null;
-                sessionStorage.removeItem('gid_token');
+                localStorage.removeItem('gid_token');
             }
         }
 
@@ -904,6 +759,9 @@
             .catch(handleError);
     }
 
+    // Chevron SVG (shared)
+    const CHEVRON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`;
+
     // ── Roadmap rendering ────────────────────────────────────────────
     function generateRoadmap(data) {
         const container = document.getElementById('roadmap-container');
@@ -934,30 +792,8 @@
                     totalStepTopics += totalSubStepTopics;
                     completedStepTopics += completedSubStepTopics;
 
-                    subStepsHtml += `
-                            <button type="button" class="sub-collapsible ${subStepProgressClass}" style="--progress-width: ${subStepPercentage}%" data-step="${step.step_no}" data-substep="${subStep.sub_step_no}">
-                                <span class="collapsible-title">${subStep.sub_step_no}. ${subStep.sub_step_title.replace(/\n/g, ' ')}</span>
-                                <span class="progress-counter">${completedSubStepTopics}/${totalSubStepTopics}</span>
-                            </button>
-                            <div class="sub-content">
-                                <div class="table-container">
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th>Topic</th>
-                                                <th title="Blog">BLOG</th>
-
-                                                <th title="YouTube">YT</th>
-                                                <th title="LeetCode">LC</th>
-                                                <th title="GeeksForGeeks">GFG</th>
-                                                <th title="CodingNinjas">CN</th>
-                                                <th title="TakeUForward+">TUF</th>
-                                                <th>Done</th>
-                                                <th class="notes-header">Notes</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>`;
-
+                    // Build topic rows (flex list — no table)
+                    let topicRowsHtml = '';
                     subStep.topics.forEach(function (topic) {
                         const isCompleted   = progressCache[topic.id] || false;
                         const hasNotes      = !!(notesCache[topic.id] && notesCache[topic.id].trim());
@@ -965,56 +801,49 @@
                         const completedClass = isCompleted ? 'completed' : '';
                         const checkedAttr   = isCompleted ? 'checked' : '';
                         const notesBtnClass = hasNotes ? 'notes-btn has-notes' : 'notes-btn';
-                        const notesBtnLabel = hasNotes ? '📝 Edit' : '+ Notes';
+                        const notesBtnLabel = hasNotes ? '📝' : '+ Notes';
 
-                        // Escape the title for safe use in HTML attributes
                         const safeTitle = topic.question_title
                             .replace(/&/g,'&amp;').replace(/"/g,'&quot;')
                             .replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-                        let tags = '';
-                        if (topic.ques_topic) {
-                            try {
-                                const parsedTags = JSON.parse(topic.ques_topic);
-                                tags = parsedTags.map(function (t) { return t.label; }).join(', ');
-                            } catch (e) { /* ignore */ }
-                        }
-
-                        subStepsHtml += `
-                                            <tr class="${diffClass} ${completedClass}"
-                                                data-topic-id="${topic.id}"
-                                                data-topic-title="${safeTitle}">
-                                                <td class="topic-cell" title="${tags}">
-                                                    <div class="topic-title">${topic.question_title}</div>
-                                                </td>
-                                                ${createLinkCell(topic.post_link, 'BLOG')}
-
-                                                ${createLinkCell(topic.yt_link, 'YT')}
-                                                ${createLinkCell(topic.lc_link, 'LC')}
-                                                ${createLinkCell(topic.gfg_link, 'GFG')}
-                                                ${createLinkCell(topic.cs_link, 'CN')}
-                                                ${createLinkCell(topic.plus_link, 'TUF')}
-                                                <td class="status-cell">
-                                                    <input type="checkbox" class="status-checkbox"
-                                                           data-id="${topic.id}" ${checkedAttr}>
-                                                </td>
-                                                <td class="notes-cell">
-                                                    <button type="button"
-                                                            class="${notesBtnClass}"
-                                                            data-id="${topic.id}"
-                                                            data-title="${safeTitle}"
-                                                            title="${hasNotes ? 'Edit notes' : 'Add notes'}">
-                                                        ${notesBtnLabel}
-                                                    </button>
-                                                </td>
-                                            </tr>`;
+                        topicRowsHtml += `
+                            <div class="topic-row ${diffClass} ${completedClass}"
+                                 data-topic-id="${topic.id}"
+                                 data-topic-title="${safeTitle}">
+                                <span class="status-cell">
+                                    <input type="checkbox" class="status-checkbox"
+                                           data-id="${topic.id}" ${checkedAttr}>
+                                </span>
+                                <span class="topic-name" title="${safeTitle}">${topic.question_title}</span>
+                                <span class="topic-icons">
+                                    ${createIconLink(topic.yt_link,   'YT',  './assets/logo/yt.svg')}
+                                    ${createIconLink(topic.lc_link,   'LC',  './assets/logo/lc.svg')}
+                                    ${createIconLink(topic.gfg_link,  'GFG', './assets/logo/gfg.svg')}
+                                    ${createIconLink(topic.cs_link,   'CN',  './assets/logo/cn.svg')}
+                                    ${createIconLink(topic.plus_link, 'TUF', './assets/logo/tuf.svg')}
+                                    <button type="button"
+                                            class="${notesBtnClass}"
+                                            data-id="${topic.id}"
+                                            data-title="${safeTitle}"
+                                            title="${hasNotes ? 'Edit notes' : 'Add notes'}">
+                                        ${notesBtnLabel}
+                                    </button>
+                                </span>
+                            </div>`;
                     });
 
                     subStepsHtml += `
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>`;
+                        <button type="button" class="sub-collapsible ${subStepProgressClass}"
+                                style="--progress-width: ${subStepPercentage}%"
+                                data-step="${step.step_no}" data-substep="${subStep.sub_step_no}">
+                            <span class="step-chevron">${CHEVRON}</span>
+                            <span class="collapsible-title">${subStep.sub_step_no}. ${subStep.sub_step_title.replace(/\n/g, ' ')}</span>
+                            <span class="progress-counter">${completedSubStepTopics}/${totalSubStepTopics}</span>
+                        </button>
+                        <div class="sub-content">
+                            <div class="topic-list">${topicRowsHtml}</div>
+                        </div>`;
                 });
             }
 
@@ -1023,22 +852,29 @@
             const stepPercentage = totalStepTopics > 0 ? (completedStepTopics / totalStepTopics) * 100 : 0;
 
             htmlContent += `
-                        <button type="button" class="collapsible ${stepProgressClass}" style="--progress-width: ${stepPercentage}%" data-step="${step.step_no}">
-                            <span class="collapsible-title">Step ${step.step_no}: ${step.step_title}</span>
-                            <span class="progress-counter">${completedStepTopics}/${totalStepTopics}</span>
-                        </button>
-                        <div class="content">${subStepsHtml}</div>`;
+                <button type="button" class="collapsible ${stepProgressClass}"
+                        style="--progress-width: ${stepPercentage}%"
+                        data-step="${step.step_no}">
+                    <span class="step-chevron">${CHEVRON}</span>
+                    <span class="collapsible-title">Step ${step.step_no}: ${step.step_title}</span>
+                    <span class="progress-counter">${completedStepTopics}/${totalStepTopics}</span>
+                </button>
+                <div class="content">${subStepsHtml}</div>`;
         });
 
         container.innerHTML = htmlContent;
     }
 
-    function createLinkCell(url, label) {
+    function createIconLink(url, label, imgSrc) {
         if (url) {
-            const logo = platformLogos[label] || label;
-            return `<td class="link-cell"><a href="${url}" target="_blank" rel="noopener noreferrer" title="${label}">${logo}</a></td>`;
+            return `<a href="${url}" target="_blank" rel="noopener noreferrer"
+                       class="icon-link" title="${label}">
+                        <img src="${imgSrc}" alt="${label}">
+                    </a>`;
         }
-        return `<td class="na-cell">-</td>`;
+        return `<span class="icon-link na" title="${label}">
+                    <img src="${imgSrc}" alt="${label}">
+                </span>`;
     }
 
     function getDifficultyClass(difficulty) {
@@ -1069,6 +905,16 @@
             mainStepButton.style.setProperty('--progress-width', pct + '%');
             mainStepButton.classList.toggle('completed', total > 0 && done === total);
         }
+    }
+
+    // ── refreshNotesBtnInTable updated for new layout ─────────────────
+    function refreshNotesBtnInTable(topicId, text) {
+        const btn = document.querySelector('.notes-btn[data-id="' + topicId + '"]');
+        if (!btn) return;
+        const hasNotes = !!(text && text.trim());
+        btn.className = hasNotes ? 'notes-btn has-notes' : 'notes-btn';
+        btn.textContent = hasNotes ? '📝' : '+ Notes';
+        btn.title = hasNotes ? 'Edit notes' : 'Add notes';
     }
 
     // ── Notes modal ──────────────────────────────────────────────────
@@ -1162,16 +1008,6 @@
         });
     }
 
-    // Update the Notes button in the table row after saving
-    function refreshNotesBtnInTable(topicId, text) {
-        const btn = document.querySelector('.notes-btn[data-id="' + topicId + '"]');
-        if (!btn) return;
-        const hasNotes = !!(text && text.trim());
-        btn.className = hasNotes ? 'notes-btn has-notes' : 'notes-btn';
-        btn.textContent = hasNotes ? '📝 Edit' : '+ Notes';
-        btn.title = hasNotes ? 'Edit notes' : 'Add notes';
-    }
-
     // ── Event listeners ──────────────────────────────────────────────
     function addEventListeners() {
         const container    = document.getElementById('roadmap-container');
@@ -1184,7 +1020,7 @@
         }
 
         container.addEventListener('click', function (event) {
-            // Notes button click → open modal
+            // Notes button → open modal
             const notesBtn = event.target.closest('.notes-btn');
             if (notesBtn) {
                 event.stopPropagation();
@@ -1192,13 +1028,9 @@
                 return;
             }
 
-            // Don't collapse section when clicking a notes button
-            if (event.target.closest('.notes-cell')) return;
-
+            // Collapsible step / sub-step toggle
             const collapsible = event.target.closest('.collapsible, .sub-collapsible');
-            const statusCell  = event.target.closest('.status-cell');
-
-            if (collapsible) {
+            if (collapsible && !event.target.closest('.status-cell') && !event.target.closest('.topic-icons')) {
                 collapsible.classList.toggle('active');
                 const content = collapsible.nextElementSibling;
                 if (content.style.maxHeight) {
@@ -1211,24 +1043,25 @@
                     }
                 }
                 updateToggleAllLabel();
+                return;
             }
 
+            // Checkbox click (status-cell is now a <span> inside .topic-row)
+            const statusCell = event.target.closest('.status-cell');
             if (statusCell) {
                 const checkbox = statusCell.querySelector('.status-checkbox');
                 if (checkbox) {
                     checkbox.checked = !checkbox.checked;
                     const topicId       = checkbox.dataset.id;
                     const isChecked     = checkbox.checked;
-                    const row           = checkbox.closest('tr');
+                    const row           = checkbox.closest('.topic-row');
                     const questionTitle = row ? row.dataset.topicTitle : '';
 
-                    // Update cache and localStorage immediately
                     progressCache[topicId] = isChecked;
                     saveToLocalStorage();
-                    checkbox.closest('tr').classList.toggle('completed', isChecked);
+                    if (row) row.classList.toggle('completed', isChecked);
                     updateCounters(checkbox);
 
-                    // Push to Sheet asynchronously
                     if (USE_SHEETS) {
                         showStatus('💾 Saving…', 'info', 0);
                         pushToSheet(questionTitle, isChecked, notesCache[topicId] || '')
@@ -1244,11 +1077,11 @@
             }
         });
 
-        // Logout button
+        // Logout
         const logoutBtn = document.getElementById('logout-btn');
         if (logoutBtn) {
             logoutBtn.addEventListener('click', function () {
-                sessionStorage.removeItem('gid_token');
+                localStorage.removeItem('gid_token');
                 localStorage.removeItem('gid_remember');
                 googleIdToken = null;
                 if (typeof google !== 'undefined' && google.accounts) {
@@ -1258,7 +1091,7 @@
             });
         }
 
-        // Set user display name (works for both fresh login and cached token)
+        // Show user name
         const userDisplay = document.getElementById('user-display');
         if (userDisplay && googleIdToken) {
             const p = parseJwt(googleIdToken);
